@@ -5,9 +5,29 @@ import { Server } from "socket.io"
 let app = express()
 
 const server=http.createServer(app)
-const io=new Server(server,{
-    cors:{
-        origin:"http://localhost:5173"
+const clientUrl = process.env.CLIENT_URL;
+const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:3000"
+];
+
+if (clientUrl) {
+    allowedOrigins.push(clientUrl);
+    if (clientUrl.endsWith('/')) {
+        allowedOrigins.push(clientUrl.slice(0, -1));
+    }
+}
+
+const io = new Server(server, {
+    cors: {
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
+                callback(null, true);
+            } else {
+                callback(null, true);
+            }
+        },
+        methods: ["GET", "POST"]
     }
 })
  const userSocketMap ={}

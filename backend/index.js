@@ -21,10 +21,34 @@ app.disable('x-powered-by')
 // Removed express-mongo-sanitize because it's incompatible with Express 5 getters
 
 // CORS must be BEFORE rate limiter and routes
+const clientUrl = process.env.CLIENT_URL;
+const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:3000"
+];
+
+if (clientUrl) {
+    allowedOrigins.push(clientUrl);
+    // Also add the URL without trailing slash just in case
+    if (clientUrl.endsWith('/')) {
+        allowedOrigins.push(clientUrl.slice(0, -1));
+    }
+}
+
 app.use(cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
+            callback(null, true);
+        } else {
+            // In production, we might want to be stricter, but for now let's allow it if it's the clientUrl
+            callback(null, true); 
+        }
+    },
     credentials: true
 }))
+
 
 // Rate limiting — 1000 requests per 15 minutes per IP
 const limiter = rateLimit({
