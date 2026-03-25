@@ -9,4 +9,4 @@ const genToken=async (userId)=>{
     }
 }
 
-export default genToken
+export default genToken  
