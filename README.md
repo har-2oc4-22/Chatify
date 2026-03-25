@@ -1,6 +1,6 @@
-# 💬 Connectify
+# 💬 Chatify
 
-Connectify is a full-stack developer community platform where users can share posts, update profiles, and engage in real-time conversations through group chats.
+Chatify is a full-stack developer community platform where users can share posts, update profiles, and engage in real-time conversations through group chats.
 
 ## 🚀 Features
 
