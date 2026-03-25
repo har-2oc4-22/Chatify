@@ -33,6 +33,11 @@ export const editProfile = async (req, res, next) => {
         
         if (req.file) {
             image = await uploadOnCloudinary(req.file.path)
+            if (!image) {
+                const error = new Error("Failed to upload image. Please try again.");
+                error.statusCode = 500;
+                return next(error);
+            }
         }
 
         // Build update object dynamically to only update provided fields
@@ -88,14 +93,16 @@ export const search = async (req, res, next) => {
         }
 
         query = query.trim();
+        // Escape characters to prevent Regular Expression Denial of Service (ReDoS)
+        const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
         let users = await User.find({
             $and: [
                 { _id: { $ne: req.userId } }, // Don't return current user in search
                 {
                     $or: [
-                        { name: { $regex: query, $options: "i" } },
-                        { userName: { $regex: query, $options: "i" } },
+                        { name: { $regex: escapedQuery, $options: "i" } },
+                        { userName: { $regex: escapedQuery, $options: "i" } },
                     ]
                 }
             ]
