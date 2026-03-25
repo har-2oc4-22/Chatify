@@ -38,7 +38,7 @@ function MessageArea() {
       formData.append("message", input)
       if (backendImage) formData.append("image", backendImage)
       let result = await axios.post(`${serverUrl}/api/message/send/${selectedUser._id}`, formData, { withCredentials: true })
-      dispatch(setMessages([...messages, result.data]))
+      dispatch(setMessages([...(messages || []), result.data]))
       setInput(""); setFrontendImage(null); setBackendImage(null); setShowPicker(false)
     } catch (error) {
       console.log(error)
@@ -56,7 +56,7 @@ function MessageArea() {
 
   useEffect(() => {
     socket?.on("newMessage", (mess) => {
-      dispatch(setMessages([...messages, mess]))
+      dispatch(setMessages([...(messages || []), mess]))
     })
     return () => socket?.off("newMessage")
   }, [messages, socket])

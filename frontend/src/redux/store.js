@@ -7,5 +7,8 @@ export const store=configureStore({
         user:userSlice,
         message:messageSlice,
         toast:toastSlice
-    }
+    },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+        serializableCheck: false
+    })
 })
